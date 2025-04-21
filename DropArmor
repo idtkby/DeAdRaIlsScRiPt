@@ -1,0 +1,37 @@
+task.spawn(function()
+    local CoreGui = game:GetService("CoreGui")
+
+    -- Tạo GUI gốc
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "FullFeatureButtonGUI"
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
+    gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    gui.Parent = CoreGui
+
+    -- Tạo nút
+    local button = Instance.new("TextButton")
+    button.Name = "ActionButton"
+    button.Size = UDim2.new(0, 120, 0, 44)
+    button.Position = UDim2.new(0, 20, 0.5, -22)
+    button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    button.TextColor3 = Color3.new(1, 1, 1)
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 14
+    button.Text = "Drop Armor"
+    button.AutoButtonColor = true
+    button.Active = true
+    button.Draggable = true
+    button.Parent = gui
+
+    -- Hành động khi bấm nút
+    button.MouseButton1Click:Connect(function()
+        local parts = { "Right Arm", "Head", "Left Arm", "Torso" }
+        local remote = game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Network"):WaitForChild("RemoteEvent"):WaitForChild("DropEquipment")
+
+        for _, part in ipairs(parts) do
+            remote:FireServer(part)
+            task.wait(0.1)
+        end
+    end)
+end)
