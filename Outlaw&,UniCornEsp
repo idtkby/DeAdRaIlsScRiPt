@@ -1,0 +1,107 @@
+task.spawn(function()
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local player = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local modsToTrack = {
+"Model_RifleOutlaw",
+"Model_ShotgunOutlaw",
+"Model_RevolverOutlaw"
+}
+local unicornName = "Unicorn"
+
+local espObjects = {}
+local notifiedOutlaw = false
+local notifiedUnicorn = false
+
+-- Gửi thông báo Roblox
+local function sendNotification(title, text, duration)
+StarterGui:SetCore("SendNotification", {
+Title = title;
+Text = text;
+Duration = duration or 5;
+})
+end
+
+-- Tạo ESP
+local function createESP(mod, labelName)
+local billboard = Instance.new("BillboardGui")
+billboard.Name = "ESP"
+billboard.Size = UDim2.new(0, 100, 0, 30)
+billboard.StudsOffset = Vector3.new(0, 4, 0)
+billboard.AlwaysOnTop = true
+billboard.MaxDistance = math.huge
+
+local label = Instance.new("TextLabel")  
+label.Size = UDim2.new(1, 0, 1, 0)  
+label.BackgroundTransparency = 1  
+label.Text = labelName  
+label.TextColor3 = Color3.new(0.5, 0.5, 0.5)  
+label.TextStrokeColor3 = Color3.new(1, 1, 1)  
+label.TextStrokeTransparency = 0  
+label.TextSize = 10 -- Kích thước chữ cố định là 10  
+label.Font = Enum.Font.SourceSansBold  
+label.Parent = billboard  
+
+billboard.Parent = mod:FindFirstChild("Head") or mod:FindFirstChild("HumanoidRootPart") or mod.PrimaryPart  
+espObjects[mod] = billboard
+
+end
+
+-- Xóa ESP nếu mod biến mất hoặc máu bằng 0
+local function removeESP(mod)
+if espObjects[mod] then
+espObjects[mod]:Destroy()
+espObjects[mod] = nil
+end
+end
+
+-- Liên tục kiểm tra và cập nhật ESP
+RunService.Heartbeat:Connect(function()
+local outlawFound = false
+local unicornFound = false
+
+for _, mod in ipairs(workspace:GetDescendants()) do  
+    if mod:IsA("Model") then  
+        local humanoid = mod:FindFirstChild("Humanoid")  
+
+        -- Kiểm tra Outlaw  
+        if table.find(modsToTrack, mod.Name) and humanoid and humanoid.Health > 0 then  
+            outlawFound = true  
+            if not espObjects[mod] then  
+                createESP(mod, "Outlaw")  
+            end  
+          
+        -- Kiểm tra Unicorn  
+        elseif mod.Name == unicornName and humanoid and humanoid.Health > 0 then  
+            unicornFound = true  
+            if not espObjects[mod] then  
+                createESP(mod, "Unicorn")  
+            end  
+          
+        -- Xóa ESP nếu mod không hợp lệ hoặc đã chết  
+        elseif espObjects[mod] then  
+            removeESP(mod)  
+        end  
+    end  
+end  
+
+-- Thông báo khi phát hiện Outlaw  
+if cowboyFound and not notifiedOutlaw then  
+    sendNotification("Thông báo", "⚠️ Outlaw has spawn!", 8)  
+    notifiedCowboy = true  
+elseif not cowboyFound then  
+    notifiedCowboy = false  
+end  
+
+-- Thông báo khi phát hiện Unicorn  
+if unicornFound and not notifiedUnicorn then  
+    sendNotification("Thông báo", "❗ Unicorn has SPAWN!!", 8)  
+    notifiedUnicorn = true  
+elseif not unicornFound then  
+    notifiedUnicorn = false  
+end
+
+end)
+end)
