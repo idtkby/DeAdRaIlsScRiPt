@@ -1,0 +1,56 @@
+task.spawn(function()
+local espColor = Color3.fromRGB(255, 255, 255) -- Màu chữ trắng
+local outlineColor = Color3.fromRGB(128, 128, 128) -- Viền xám
+local highlightColor = Color3.fromRGB(255, 223, 0) -- Màu vàng cho highlight
+
+-- Tạo ESP
+local function createESP(item)
+    -- Tạo BillboardGui
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "BondESP"
+    billboard.AlwaysOnTop = true
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.MaxDistance = math.huge  -- Hiển thị ở khoảng cách vô hạn
+    billboard.Parent = item
+
+    -- Tạo TextLabel
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboard
+    textLabel.Text = "💰 BOND 💰"
+    textLabel.TextColor3 = espColor
+    textLabel.TextStrokeColor3 = outlineColor
+    textLabel.TextStrokeTransparency = 0
+    textLabel.BackgroundTransparency = 1
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.TextSize = 10
+
+    -- Tạo Highlight
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "BondHighlight"
+    highlight.FillColor = highlightColor
+    highlight.FillTransparency = 0.5 -- Độ trong suốt vừa đủ
+    highlight.OutlineColor = highlightColor
+    highlight.OutlineTransparency = 0
+    highlight.Parent = item
+end
+
+-- Kiểm tra và thêm ESP + Highlight
+local function checkForBonds()
+    for _, item in ipairs(workspace:GetDescendants()) do
+        if item:IsA("Model") and item.Name == "Bond" and not item:FindFirstChild("BondESP") then
+            createESP(item)
+        end
+    end
+end
+
+-- Lắng nghe khi Bond mới xuất hiện
+workspace.DescendantAdded:Connect(function(descendant)
+    if descendant:IsA("Model") and descendant.Name == "Bond" then
+        createESP(descendant)
+    end
+end)
+
+-- Khởi động kiểm tra ban đầu
+checkForBonds()
+end)
