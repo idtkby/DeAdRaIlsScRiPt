@@ -1,0 +1,74 @@
+task.spawn(function()
+local Workspace = game:GetService("Workspace")
+
+-- Cấu hình màu sắc
+local textColor = Color3.fromRGB(0, 0, 0) -- Màu chữ đen
+local outlineColor = Color3.fromRGB(255, 255, 255) -- Viền trắng
+local highlightColor = Color3.fromRGB(0, 0, 0) -- Highlight đen
+
+-- Hàm tạo ESP
+local function createCoalESP(model)
+    if model:FindFirstChild("CoalESP") then return end
+
+    -- BillboardGui
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "CoalESP"
+    billboard.AlwaysOnTop = true
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.MaxDistance = math.huge
+    billboard.Parent = model.PrimaryPart
+
+    -- TextLabel
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboard
+    textLabel.Text = "Coal"
+    textLabel.TextColor3 = textColor
+    textLabel.TextStrokeColor3 = outlineColor
+    textLabel.TextStrokeTransparency = 0
+    textLabel.BackgroundTransparency = 1
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.TextSize = 15 -- Theo yêu cầu
+    textLabel.Font = Enum.Font.GothamBold
+
+    -- Highlight
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "CoalHighlight"
+    highlight.FillColor = highlightColor
+    highlight.FillTransparency = 0.5
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- Viền Highlight trắng
+    highlight.OutlineTransparency = 0
+    highlight.Parent = model
+end
+
+-- Hàm xử lý vật phẩm
+local function handleCoal(model)
+    if model:IsA("Model") and model.PrimaryPart and model.Name == "Coal" then
+        createCoalESP(model)
+    end
+end
+
+-- Quét ban đầu
+for _, item in ipairs(Workspace:GetDescendants()) do
+    task.spawn(function()
+        if item:IsA("Model") then
+            if not item.PrimaryPart then
+                item:GetPropertyChangedSignal("PrimaryPart"):Wait()
+            end
+            handleCoal(item)
+        end
+    end)
+end
+
+-- Theo dõi vật phẩm mới
+Workspace.DescendantAdded:Connect(function(descendant)
+    task.spawn(function()
+        if descendant:IsA("Model") then
+            if not descendant.PrimaryPart then
+                descendant:GetPropertyChangedSignal("PrimaryPart"):Wait()
+            end
+            handleCoal(descendant)
+        end
+    end)
+end)
+end)
