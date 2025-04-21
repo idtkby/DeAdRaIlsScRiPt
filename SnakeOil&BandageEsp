@@ -1,0 +1,79 @@
+task.spawn(function()
+local Workspace = game:GetService("Workspace")
+
+-- Màu sắc
+local colorSnakeOil = Color3.fromRGB(0, 160, 0) -- Xanh lá đậm
+local colorBandage = Color3.fromRGB(255, 0, 195) -- Hồng đậm
+
+local outlineColor = Color3.fromRGB(0, 0, 0) -- Viền đen
+
+-- Hàm tạo ESP
+local function createItemESP(model, labelText, fillColor)
+    if model:FindFirstChild("ItemESP") then return end
+
+    -- BillboardGui
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ItemESP"
+    billboard.AlwaysOnTop = true
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.MaxDistance = math.huge
+    billboard.Parent = model.PrimaryPart
+
+    -- TextLabel
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboard
+    textLabel.Text = labelText
+    textLabel.TextColor3 = fillColor
+    textLabel.TextStrokeColor3 = outlineColor
+    textLabel.TextStrokeTransparency = 0
+    textLabel.BackgroundTransparency = 1
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.TextSize = 15
+    textLabel.Font = Enum.Font.GothamBold
+
+    -- Highlight
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "ItemESPHighlight"
+    highlight.FillColor = fillColor
+    highlight.FillTransparency = 1
+    highlight.OutlineColor = fillColor
+    highlight.OutlineTransparency = 0
+    highlight.Parent = model
+end
+
+-- Hàm kiểm tra và gán ESP
+local function handleItem(model)
+    if model:IsA("Model") and model.PrimaryPart then
+        if model.Name == "Snake Oil" then
+            createItemESP(model, "Snake Oil", colorSnakeOil)
+        elseif model.Name == "Bandage" then
+            createItemESP(model, "Bandage", colorBandage)
+        end
+    end
+end
+
+-- Quét ban đầu
+for _, item in ipairs(Workspace:GetDescendants()) do
+    task.spawn(function()
+        if item:IsA("Model") then
+            if not item.PrimaryPart then
+                item:GetPropertyChangedSignal("PrimaryPart"):Wait()
+            end
+            handleItem(item)
+        end
+    end)
+end
+
+-- Theo dõi thêm mới
+Workspace.DescendantAdded:Connect(function(descendant)
+    task.spawn(function()
+        if descendant:IsA("Model") then
+            if not descendant.PrimaryPart then
+                descendant:GetPropertyChangedSignal("PrimaryPart"):Wait()
+            end
+            handleItem(descendant)
+        end
+    end)
+end)
+end)
