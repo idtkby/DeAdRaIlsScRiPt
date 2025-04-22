@@ -84,7 +84,7 @@ local function predictPos(target)
         return head and head.Position or rootPart and rootPart.Position 
     end
     local velocity = rootPart.Velocity
-    local predictionTime = 0.01
+    local predictionTime = 0.015
     local basePosition = rootPart.Position + velocity * predictionTime
     local headOffset = head.Position - rootPart.Position
     return basePosition + headOffset
