@@ -1,0 +1,88 @@
+local espColorWhite = Color3.fromRGB(255, 255, 255) -- Màu trắng cho Large/Small
+local outlineColor = Color3.fromRGB(128, 128, 128) -- Viền xám
+local highlightColorWhite = Color3.fromRGB(255, 255, 255) -- Highlight trắng
+
+local espColorGold = Color3.fromRGB(255, 215, 0) -- Màu vàng đậm cho GoldenEgg
+local highlightColorGold = Color3.fromRGB(255, 215, 0) -- Highlight vàng đậm
+
+local StarterGui = game:GetService("StarterGui")
+local Workspace = game:GetService("Workspace")
+
+-- Hàm tạo ESP
+local function createEggESP(model, label, textColor, highlightColor)
+    -- Không tạo trùng
+    if model:FindFirstChild("EggESP") then return end
+
+    -- Billboard
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "EggESP"
+    billboard.AlwaysOnTop = true
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.MaxDistance = math.huge
+    billboard.Parent = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
+
+    -- Text Label
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboard
+    textLabel.Text = label
+    textLabel.TextColor3 = textColor
+    textLabel.TextStrokeColor3 = outlineColor
+    textLabel.TextStrokeTransparency = 0
+    textLabel.BackgroundTransparency = 1
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.TextSize = 10
+
+    -- Highlight
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "EggESPHighlight"
+    highlight.FillColor = highlightColor
+    highlight.FillTransparency = 0.5
+    highlight.OutlineColor = highlightColor
+    highlight.OutlineTransparency = 0
+    highlight.Parent = model
+end
+
+-- Hàm xử lý Model
+local function handleModel(model)
+    if model:IsA("Model") then
+        if model.Name == "LargeEgg" then
+            createEggESP(model, "Large Egg", espColorWhite, highlightColorWhite)
+        elseif model.Name == "SmallEgg" then
+            createEggESP(model, "Small Egg", espColorWhite, highlightColorWhite)
+        elseif model.Name == "GoldenEgg" then
+            createEggESP(model, "GOLDEN EGG", espColorGold, highlightColorGold)
+
+            -- Thông báo Golden Egg
+            StarterGui:SetCore("SendNotification", {
+                Title = "Phát hiện!",
+                Text = "Golden Egg vừa xuất hiện!",
+                Duration = 5
+            })
+        end
+    end
+end
+
+-- Quét ban đầu
+for _, item in ipairs(Workspace:GetDescendants()) do
+    if item:IsA("Model") then
+        task.spawn(function()
+            if not item.PrimaryPart then
+                item:GetPropertyChangedSignal("PrimaryPart"):Wait()
+            end
+            handleModel(item)
+        end)
+    end
+end
+
+-- Theo dõi Model mới
+Workspace.DescendantAdded:Connect(function(descendant)
+    if descendant:IsA("Model") then
+        task.spawn(function()
+            if not descendant.PrimaryPart then
+                descendant:GetPropertyChangedSignal("PrimaryPart"):Wait()
+            end
+            handleModel(descendant)
+        end)
+    end
+end)
