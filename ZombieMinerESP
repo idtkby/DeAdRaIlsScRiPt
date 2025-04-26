@@ -1,0 +1,71 @@
+task.spawn(function()
+    local RunService = game:GetService("RunService")
+    local Zombies = {}
+    local player = game.Players.LocalPlayer
+
+    -- Tạo BillboardGui ESP
+    local function createESP(zombie)
+        if zombie:FindFirstChild("Head") and not zombie:FindFirstChild("Dog_ZombieMiner") then
+            local billboard = Instance.new("BillboardGui")
+            billboard.Name = "Dog_ZombieMiner"
+            billboard.Adornee = zombie.Head
+            billboard.Size = UDim2.new(0, 100, 0, 30)
+            billboard.StudsOffset = Vector3.new(0, 2, 0)
+            billboard.AlwaysOnTop = true
+            billboard.Parent = zombie
+
+            local textLabel = Instance.new("TextLabel")
+            textLabel.Size = UDim2.new(1, 0, 1, 0)
+            textLabel.BackgroundTransparency = 1
+            textLabel.Text = "Dog Miner💥"
+            textLabel.TextColor3 = Color3.new(95, 155, 0) -- Xanh lá
+            textLabel.TextStrokeTransparency = 0 -- Có viền chữ
+            textLabel.Font = Enum.Font.GothamBold
+            textLabel.TextScaled = true
+            textLabel.Parent = billboard
+        end
+    end
+
+    -- Xoá ESP khi ZombieMiner chết
+    local function removeESP(zombie)
+        local esp = zombie:FindFirstChild("Dog_ZombieMiner")
+        if esp then
+            esp:Destroy()
+        end
+    end
+
+    -- Kiểm tra nếu là ZombieMiner
+    local function isZombieMiner(obj)
+        return obj:IsA("Model") 
+            and obj.Name == "ZombieMiner"
+            and obj:FindFirstChild("Humanoid") 
+            and obj:FindFirstChild("Head")
+            and obj:FindFirstChild("HumanoidRootPart")
+    end
+
+    -- Quét ZombieMiner có sẵn
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if isZombieMiner(obj) then
+            Zombies[obj] = true
+            createESP(obj)
+        end
+    end
+
+    -- Theo dõi ZombieMiner mới sinh ra
+    workspace.DescendantAdded:Connect(function(obj)
+        if isZombieMiner(obj) then
+            Zombies[obj] = true
+            createESP(obj)
+        end
+    end)
+
+    -- Vòng lặp kiểm tra liên tục
+    RunService.Heartbeat:Connect(function()
+        for zombie in pairs(Zombies) do
+            if not zombie.Parent or zombie:FindFirstChild("Humanoid") and zombie.Humanoid.Health <= 0 then
+                removeESP(zombie)
+                Zombies[zombie] = nil
+            end
+        end
+    end)
+end)
