@@ -58,6 +58,8 @@ local function isNPC(obj)
     and not game:GetService("Players"):GetPlayerFromCharacter(obj)
     and obj.Name ~= "Unicorn"
     and obj.Name ~= "Model_Horse"
+    and obj.Name ~= "Model_RifleSoldier"
+    and obj.Name ~= "Model_TurretSoldier"
 end
 
 -- Cập nhật danh sách NPC
