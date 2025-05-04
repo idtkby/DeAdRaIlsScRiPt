@@ -1,0 +1,151 @@
+-- Dead Rails Wall Hack + Aimbot + GUI Gọn
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local runService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local UIS = game:GetService("UserInputService")
+
+player.CameraMode = Enum.CameraMode.Classic
+
+-- Gửi thông báo
+StarterGui:SetCore("SendNotification", {
+    Title = "Code by GioBolqvi",
+    Text = "on Roblox",
+    Duration = 3
+})
+
+-- Tạo GUI
+local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+gui.Name = "NPC_Lock_GUI"
+
+local button = Instance.new("TextButton", gui)
+button.Name = "NPC_Lock"
+button.Size = UDim2.new(0, 150, 0, 50)
+button.Position = UDim2.new(0.5, -75, 0.9, -25)
+button.BackgroundColor3 = Color3.new(0, 0, 0)
+button.TextColor3 = Color3.new(1, 1, 1)
+button.Text = "NPC Lock: OFF"
+button.Font = Enum.Font.Fantasy
+button.TextScaled = true
+
+local corner = Instance.new("UICorner", button)
+corner.CornerRadius = UDim.new(0, 12)
+
+-- Kéo nút trên mobile
+local dragging, dragInput, dragStart, startPos = false
+local function update(input)
+    local delta = input.Position - dragStart
+    button.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = button.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+button.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if dragging and input == dragInput then
+        update(input)
+    end
+end)
+
+-- Chức năng Highlight
+local function highlightSelf()
+    if player.Character and not player.Character:FindFirstChild("PlayerHighlightESP") then
+        local hl = Instance.new("Highlight", player.Character)
+        hl.Name = "PlayerHighlightESP"
+        hl.FillColor = Color3.new(1, 1, 1)
+        hl.OutlineColor = Color3.new(1, 1, 1)
+        hl.FillTransparency = 0.5
+    end
+end
+
+local function removeHighlight()
+    if player.Character then
+        local hl = player.Character:FindFirstChild("PlayerHighlightESP")
+        if hl then hl:Destroy() end
+    end
+end
+
+-- Tìm NPC gần nhất
+local function getClosestNPC()
+    local closest, dist = nil, math.huge
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") then
+            local humanoid = obj:FindFirstChildWhichIsA("Humanoid")
+            local hrp = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
+            if humanoid and hrp and humanoid.Health > 0 then
+                -- Loại trừ Player
+                local isPlayer = false
+                for _, pl in ipairs(Players:GetPlayers()) do
+                    if pl.Character == obj then
+                        isPlayer = true
+                        break
+                    end
+                end
+
+                -- Loại trừ các loại NPC cụ thể
+                local excludedNames = {
+                    ["Model_Horse"] = true,
+                    ["Unicorn"] = true,
+                    ["Model_RifleSoldier"] = true,
+                    ["Model_TurretSoldier"] = true,
+                }
+
+                if not isPlayer and not excludedNames[obj.Name] then
+                    local d = (hrp.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                    if d < dist then
+                        dist = d
+                        closest = obj
+                    end
+                end
+            end
+        end
+    end
+    return closest
+end
+
+-- Toggle Lock
+local npcLock = false
+local loopConnection
+
+button.MouseButton1Click:Connect(function()
+    npcLock = not npcLock
+    button.Text = npcLock and "NPC Lock: ON" or "NPC Lock: OFF"
+
+    if npcLock then
+        loopConnection = runService.RenderStepped:Connect(function()
+            local npc = getClosestNPC()
+            if npc and npc:FindFirstChild("Humanoid") then
+                local health = npc.Humanoid.Health
+                if health > 0 then
+                    camera.CameraSubject = npc.Humanoid
+                    highlightSelf()
+                else
+                    StarterGui:SetCore("SendNotification", { Title = "Killed NPC", Text = npc.Name, Duration = 0.5 })
+                    camera.CameraSubject = player.Character:FindFirstChild("Humanoid")
+                    removeHighlight()
+                end
+            else
+                camera.CameraSubject = player.Character:FindFirstChild("Humanoid")
+                removeHighlight()
+            end
+        end)
+    else
+        if loopConnection then loopConnection:Disconnect() loopConnection = nil end
+        camera.CameraSubject = player.Character:FindFirstChild("Humanoid")
+        removeHighlight()
+    end
+end)
