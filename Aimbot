@@ -56,7 +56,7 @@ local function isNPC(obj)
     and obj:FindFirstChild("Head") 
     and obj:FindFirstChild("HumanoidRootPart") 
     and not game:GetService("Players"):GetPlayerFromCharacter(obj)
-    and obj.Name ~= "Unicorn"
+    and obj.Name ~= "Model_Unicorn"
     and obj.Name ~= "Model_Horse"
     and obj.Name ~= "Model_RifleSoldier"
     and obj.Name ~= "Model_TurretSoldier"
