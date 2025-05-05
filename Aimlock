@@ -99,7 +99,7 @@ local function getClosestNPC()
                 -- Loại trừ các loại NPC cụ thể
                 local excludedNames = {
                     ["Model_Horse"] = true,
-                    ["Unicorn"] = true,
+                    ["Model_Unicorn"] = true,
                     ["Model_RifleSoldier"] = true,
                     ["Model_TurretSoldier"] = true,
                 }
