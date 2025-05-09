@@ -28,16 +28,16 @@ task.spawn(function()
 
     -- Xoá ESP khi ZombieMiner chết
     local function removeESP(zombie)
-        local esp = zombie:FindFirstChild("Dog_ZombieMiner")
+        local esp = zombie:FindFirstChild("Model_ZombieMiner")
         if esp then
             esp:Destroy()
         end
     end
 
     -- Kiểm tra nếu là ZombieMiner
-    local function isZombieMiner(obj)
+    local function isModel_ZombieMiner(obj)
         return obj:IsA("Model") 
-            and obj.Name == "ZombieMiner"
+            and obj.Name == "Model_ZombieMiner"
             and obj:FindFirstChild("Humanoid") 
             and obj:FindFirstChild("Head")
             and obj:FindFirstChild("HumanoidRootPart")
@@ -45,7 +45,7 @@ task.spawn(function()
 
     -- Quét ZombieMiner có sẵn
     for _, obj in ipairs(workspace:GetDescendants()) do
-        if isZombieMiner(obj) then
+        if isModel_ZombieMiner(obj) then
             Zombies[obj] = true
             createESP(obj)
         end
@@ -53,7 +53,7 @@ task.spawn(function()
 
     -- Theo dõi ZombieMiner mới sinh ra
     workspace.DescendantAdded:Connect(function(obj)
-        if isZombieMiner(obj) then
+        if isModel_ZombieMiner(obj) then
             Zombies[obj] = true
             createESP(obj)
         end
