@@ -35,7 +35,7 @@ ToggleButton.Parent = ScreenGui
 
 -- Hiển thị tên NPC
 local NPCNameLabel = Instance.new("TextLabel")
-NPCNameLabel.Size = UDim2.new(0, 200, 0, 30)
+NPCNameLabel.Size = UDim2.new(0, 250, 0, 30)
 NPCNameLabel.Position = UDim2.new(0, 10, 1, -40) -- Góc trái dưới cùng
 NPCNameLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 NPCNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -128,6 +128,20 @@ local function aim(targetPosition)
     Cam.CFrame = CFrame.new(currentCF.Position, currentCF.Position + newLookVector)
 end
 
+-- Hàm điều chỉnh kích thước văn bản của tên NPC
+local function adjustTextSize()
+    local maxTextWidth = NPCNameLabel.AbsoluteSize.X -- Chiều rộng tối đa của label
+    local textWidth = NPCNameLabel.TextBounds.X -- Chiều rộng thực tế của văn bản
+
+    -- Nếu văn bản dài hơn chiều rộng của label, giảm kích thước font
+    if textWidth > maxTextWidth then
+        local scale = maxTextWidth / textWidth
+        NPCNameLabel.TextSize = math.max(14 * scale, 10) -- Đảm bảo kích thước font không nhỏ quá 10
+    else
+        NPCNameLabel.TextSize = 14 -- Quay lại kích thước font ban đầu nếu tên không quá dài
+    end
+end
+
 -- Vòng lặp chính
 local lastUpdate = 0
 local UPDATE_INTERVAL = 0.3
@@ -145,12 +159,16 @@ RunService.Heartbeat:Connect(function(dt)
         if target then
             local predictedPosition = predictPos(target)
             aim(predictedPosition)
-            NPCNameLabel.Text = "NPC: " .. target.Name
+            local hp = math.floor(target:FindFirstChild("Humanoid").Health)
+            NPCNameLabel.Text = "NPC: " .. target.Name .. " | HP: " .. hp
+            adjustTextSize() -- Gọi hàm điều chỉnh kích thước văn bản
         else
             NPCNameLabel.Text = "NPC: None"
+            adjustTextSize() -- Gọi hàm điều chỉnh kích thước văn bản
         end
     else
         NPCNameLabel.Text = "NPC: None"
+        adjustTextSize() -- Gọi hàm điều chỉnh kích thước văn bản
     end
 end)
 
