@@ -19,7 +19,7 @@ local validNPCs = {}
 local raycastParams = RaycastParams.new()
 raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 
--- Giao diện
+-- Giao din
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game:GetService("CoreGui")
 
@@ -33,10 +33,10 @@ ToggleButton.Font = Enum.Font.GothamBold
 ToggleButton.TextSize = 14
 ToggleButton.Parent = ScreenGui
 
--- Hiển thị tên NPC
+-- Hin th tên NPC
 local NPCNameLabel = Instance.new("TextLabel")
 NPCNameLabel.Size = UDim2.new(0, 250, 0, 30)
-NPCNameLabel.Position = UDim2.new(0, 10, 1, -40) -- Góc trái dưới cùng
+NPCNameLabel.Position = UDim2.new(0, 10, 1, -40) -- Góc trái di cùng
 NPCNameLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 NPCNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 NPCNameLabel.Text = "NPC: None"
@@ -44,11 +44,11 @@ NPCNameLabel.TextSize = 14
 NPCNameLabel.Font = Enum.Font.GothamBold
 NPCNameLabel.Parent = ScreenGui
 
--- Âm thanh thông báo khi bật/tắt
+-- Âm thanh thông báo khi bt/tt
 local Sound = Instance.new("Sound", game.SoundService)
 Sound.SoundId = "rbxassetid://6026984224"
 
--- Kiểm tra NPC hợp lệ
+-- Kim tra NPC hp l
 local function isNPC(obj)
     return obj:IsA("Model") 
     and obj:FindFirstChild("Humanoid") 
@@ -62,7 +62,7 @@ local function isNPC(obj)
     and obj.Name ~= "Model_TurretSoldier"
 end
 
--- Cập nhật danh sách NPC
+-- Cp nht danh sách NPC
 local function updateNPCs()
     validNPCs = {}
     for _, obj in ipairs(workspace:GetDescendants()) do
@@ -72,13 +72,13 @@ local function updateNPCs()
     end
 end
 
--- Cập nhật vị trí FOV
+-- Cp nht v trí FOV
 local function updateDrawings()
     FOVring.Position = Cam.ViewportSize / 2
     FOVring.Radius = fov * (Cam.ViewportSize.Y / 1080)
 end
 
--- Thuật toán dự đoán vị trí NPC
+-- Thut toán d oán v trí NPC
 local function predictPos(target)
     local rootPart = target:FindFirstChild("HumanoidRootPart")
     local head = target:FindFirstChild("Head")
@@ -92,7 +92,7 @@ local function predictPos(target)
     return basePosition + headOffset
 end
 
--- Tìm mục tiêu gần nhất trong FOV
+-- Tìm mc tiêu gn nht trong FOV
 local function getTarget()
     local nearest, minDistance = nil, math.huge
     local viewportCenter = Cam.ViewportSize / 2
@@ -119,7 +119,7 @@ local function getTarget()
     return nearest
 end
 
--- Điều chỉnh góc nhìn để aim
+-- iu chnh góc nhìn  aim
 local function aim(targetPosition)
     local currentCF = Cam.CFrame
     local targetDirection = (targetPosition - currentCF.Position).Unit
@@ -128,21 +128,21 @@ local function aim(targetPosition)
     Cam.CFrame = CFrame.new(currentCF.Position, currentCF.Position + newLookVector)
 end
 
--- Hàm điều chỉnh kích thước văn bản của tên NPC
+-- Hàm iu chnh kích thc vn bn ca tên NPC
 local function adjustTextSize()
-    local maxTextWidth = NPCNameLabel.AbsoluteSize.X -- Chiều rộng tối đa của label
-    local textWidth = NPCNameLabel.TextBounds.X -- Chiều rộng thực tế của văn bản
+    local maxTextWidth = NPCNameLabel.AbsoluteSize.X -- Chiu rng ti a ca label
+    local textWidth = NPCNameLabel.TextBounds.X -- Chiu rng thc t ca vn bn
 
-    -- Nếu văn bản dài hơn chiều rộng của label, giảm kích thước font
+    -- Nu vn bn dài hn chiu rng ca label, gim kích thc font
     if textWidth > maxTextWidth then
         local scale = maxTextWidth / textWidth
-        NPCNameLabel.TextSize = math.max(14 * scale, 10) -- Đảm bảo kích thước font không nhỏ quá 10
+        NPCNameLabel.TextSize = math.max(14 * scale, 10) -- m bo kích thc font không nh quá 10
     else
-        NPCNameLabel.TextSize = 14 -- Quay lại kích thước font ban đầu nếu tên không quá dài
+        NPCNameLabel.TextSize = 14 -- Quay li kích thc font ban u nu tên không quá dài
     end
 end
 
--- Vòng lặp chính
+-- Vòng lp chính
 local lastUpdate = 0
 local UPDATE_INTERVAL = 0.3
 
@@ -161,29 +161,29 @@ RunService.Heartbeat:Connect(function(dt)
             aim(predictedPosition)
             local hp = math.floor(target:FindFirstChild("Humanoid").Health)
             NPCNameLabel.Text = "NPC: " .. target.Name .. " | HP: " .. hp
-            adjustTextSize() -- Gọi hàm điều chỉnh kích thước văn bản
+            adjustTextSize() -- Gi hàm iu chnh kích thc vn bn
         else
             NPCNameLabel.Text = "NPC: None"
-            adjustTextSize() -- Gọi hàm điều chỉnh kích thước văn bản
+            adjustTextSize() -- Gi hàm iu chnh kích thc vn bn
         end
     else
         NPCNameLabel.Text = "NPC: None"
-        adjustTextSize() -- Gọi hàm điều chỉnh kích thước văn bản
+        adjustTextSize() -- Gi hàm iu chnh kích thc vn bn
     end
 end)
 
--- Nút bật/tắt
+-- Nút bat/tt
 ToggleButton.MouseButton1Click:Connect(function()
     isAiming = not isAiming
     FOVring.Visible = isAiming
     ToggleButton.Text = "AIMBOT: " .. (isAiming and "ON" or "OFF")
     ToggleButton.TextColor3 = isAiming and Color3.fromRGB(50, 255, 50) or Color3.fromRGB(255, 50, 50)
 
-    -- Phát âm thanh khi chuyển đổi
+    -- Phát âm thanh khi chuyn i
     Sound:Play()
 end)
 
--- Kéo thả nút (giới hạn trong màn hình)
+-- Kéo th nút (gii hn trong màn hình)
 local dragging, dragInput, dragStart, startPos
 
 local function update(input)
