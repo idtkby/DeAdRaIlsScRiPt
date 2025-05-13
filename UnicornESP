@@ -1,0 +1,73 @@
+task.spawn(function() -- Made by Khang
+local RunService = game:GetService("RunService")
+local Unicorns = {}
+local highlightColor = Color3.fromRGB(255, 105, 180) -- Hồng đậm
+
+-- Tạo highlight
+local function createHighlight(model)
+	if Unicorns[model] then return end
+	local hl = Instance.new("Highlight")
+	hl.Name = "UnicornHL"
+	hl.Adornee = model
+	hl.FillColor = highlightColor
+	hl.OutlineColor = highlightColor
+	hl.FillTransparency = 0.8
+	hl.OutlineTransparency = 0
+	hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	hl.Parent = model
+	Unicorns[model] = hl
+
+	-- ESP chữ
+	local head = model:FindFirstChild("Head") or model:FindFirstChildWhichIsA("BasePart")
+	if head then
+		local esp = Instance.new("BillboardGui")
+		esp.Name = "UnicornESP"
+		esp.Size = UDim2.new(0, 200, 0, 50)
+		esp.AlwaysOnTop = true
+		esp.MaxDistance = math.huge
+		esp.Adornee = head
+		esp.Parent = head
+
+		local text = Instance.new("TextLabel")
+		text.Size = UDim2.new(1, 0, 1, 0)
+		text.BackgroundTransparency = 1
+		text.Text = "Model_Unicorn"
+		text.TextColor3 = Color3.new(1,1,1)
+		text.TextStrokeColor3 = highlightColor
+		text.TextStrokeTransparency = 0
+		text.TextScaled = true
+		text.Font = Enum.Font.GothamBold
+		text.ClipsDescendants = false
+		text.Parent = esp
+	end
+end
+
+-- Xoá khi chết hoặc biến mất
+local function monitorModel(model)
+	task.spawn(function()
+		while model and model.Parent and Unicorns[model] do
+			local hum = model:FindFirstChildOfClass("Humanoid")
+			if hum and hum.Health <= 0 then
+				break
+			end
+			task.wait(0.5)
+		end
+		if Unicorns[model] then
+			Unicorns[model]:Destroy()
+			Unicorns[model] = nil
+			local esp = model:FindFirstChild("Head") and model.Head:FindFirstChild("UnicornESP")
+			if esp then esp:Destroy() end
+		end
+	end)
+end
+
+-- Tìm Unicorn mới
+RunService.Heartbeat:Connect(function()
+	for _, model in pairs(workspace:GetDescendants()) do
+		if model:IsA("Model") and model.Name == "Model_Unicorn" and not Unicorns[model] and model:FindFirstChildOfClass("Humanoid") then
+			createHighlight(model)
+			monitorModel(model)
+		end
+	end
+end)
+end)
