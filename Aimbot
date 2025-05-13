@@ -35,7 +35,7 @@ ToggleButton.Parent = ScreenGui
 
 -- Hin th tên NPC
 local NPCNameLabel = Instance.new("TextLabel")
-NPCNameLabel.Size = UDim2.new(0, 250, 0, 30)
+NPCNameLabel.Size = UDim2.new(0, 260, 0, 30)
 NPCNameLabel.Position = UDim2.new(0, 10, 1, -40) -- Góc trái di cùng
 NPCNameLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 NPCNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
