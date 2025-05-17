@@ -1,0 +1,68 @@
+local ToolsToEquip = {
+	"Shovel",
+	"Vampire Knife",
+	"Pickaxe",
+	"Tomahawk",
+	"Jade Sword",
+	"Cavalry Sword"
+}
+
+-- Hàm trang bị toàn bộ tool
+local function equipAllTools()
+	local player = game:GetService("Players").LocalPlayer
+	local backpack = player:FindFirstChild("Backpack")
+	local character = player.Character or player.CharacterAdded:Wait()
+
+	for _, toolName in ipairs(ToolsToEquip) do
+		local tool = backpack:FindFirstChild(toolName)
+		if tool and tool:IsA("Tool") then
+			tool.Parent = character
+		end
+	end
+end
+
+-- Tạo GUI nút
+local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local EquipButton = Instance.new("TextButton", ScreenGui)
+EquipButton.Size = UDim2.new(0, 140, 0, 40)
+EquipButton.Position = UDim2.new(0, 20, 0, 250)
+EquipButton.Text = "Equip All Tools"
+EquipButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+EquipButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+EquipButton.Font = Enum.Font.GothamBold
+EquipButton.TextSize = 14
+
+-- Kích hoạt nút
+EquipButton.MouseButton1Click:Connect(equipAllTools)
+
+-- Hỗ trợ kéo mobile
+local UIS = game:GetService("UserInputService")
+local dragging, dragInput, dragStart, startPos
+
+EquipButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = EquipButton.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+EquipButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - dragStart
+		local newX = math.clamp(startPos.X.Offset + delta.X, 0, workspace.CurrentCamera.ViewportSize.X - EquipButton.AbsoluteSize.X)
+		local newY = math.clamp(startPos.Y.Offset + delta.Y, 0, workspace.CurrentCamera.ViewportSize.Y - EquipButton.AbsoluteSize.Y)
+		EquipButton.Position = UDim2.new(0, newX, 0, newY)
+	end
+end)
