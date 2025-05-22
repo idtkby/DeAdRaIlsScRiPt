@@ -98,4 +98,4 @@ end
 
 createButton("V1", 0.14, "https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/OPAUTOSWING")
 createButton("V2", 0.39, "https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/OPAUTOSWINGV2")
-createButton("V3.5", 0.64, "https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/OPAUTOSWINGV3.5")
+createButton("V3", 0.64, "https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/NOTV4TRUST")
