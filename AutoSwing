@@ -96,6 +96,6 @@ btn.MouseButton1Click:Connect(function()
 end)
 end
 
-createButton("V1", 0.14, "https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/OPAUTOSWING")
-createButton("V2", 0.39, "https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/OPAUTOSWINGV2")
-createButton("V3", 0.64, "https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/NOTV4TRUST")
+createButton("V3", 0.14, "https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/NOTV4TRUST")
+createButton("V4", 0.39, "https://raw.githubusercontent.com/HeadHarse/DeadRails/refs/heads/main/V4SWING")
+createButton("V5", 0.64, "https://raw.githubusercontent.com/HeadHarse/DeadRails/refs/heads/main/V5OPSWING")
