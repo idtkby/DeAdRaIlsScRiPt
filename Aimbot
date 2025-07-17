@@ -144,7 +144,7 @@ end
 
 -- Vòng lp chính
 local lastUpdate = 0
-local UPDATE_INTERVAL = 0.3
+local UPDATE_INTERVAL = 3
 
 RunService.Heartbeat:Connect(function(dt)
     updateDrawings()
